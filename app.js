@@ -9,10 +9,11 @@ const themeLabel = document.getElementById('theme-label');
 const filterButtons = document.querySelectorAll('.filter-button');
 
 const STORAGE_KEY = 'my-todos';
+const THEME_STORAGE_KEY = 'my-todo-theme';
 
 let todos = loadTodos();
 let currentFilter = 'all';
-let selectedTheme = null;
+let selectedTheme = loadThemePreference();
 const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
 
 // 從 localStorage 載入待辦事項,資料無法讀取時以空清單開始。
@@ -33,6 +34,26 @@ function saveTodos() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   } catch (error) {
     console.warn('保存待辦清單失敗。', error);
+  }
+}
+
+// 從 localStorage 載入手動選擇的主題,沒有有效設定時跟隨系統偏好。
+function loadThemePreference() {
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    return savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : null;
+  } catch (error) {
+    console.warn('讀取主題偏好失敗,將使用作業系統設定。', error);
+    return null;
+  }
+}
+
+// 保存手動選擇的主題偏好。
+function saveThemePreference(theme) {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    console.warn('保存主題偏好失敗。', error);
   }
 }
 
@@ -125,12 +146,16 @@ function deleteTodo(id) {
   render();
 }
 
-// 依系統偏好初始化主題,手動切換只在本次開啟頁面期間生效。
+// 優先套用保存的主題偏好,沒有偏好時由系統設定決定主題。
+if (selectedTheme) {
+  document.documentElement.dataset.theme = selectedTheme;
+}
 updateThemeButton(getActiveTheme());
 
 themeToggle.addEventListener('click', () => {
   selectedTheme = getActiveTheme() === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.theme = selectedTheme;
+  saveThemePreference(selectedTheme);
   updateThemeButton(selectedTheme);
 });
 
