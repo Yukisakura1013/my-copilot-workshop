@@ -6,7 +6,7 @@
 
 ## 線上展示
 
-GitHub Pages：`https://<你的帳號>.github.io/<你的repo名稱>/`
+GitHub Pages：[https://yukisakura1013.github.io/my-copilot-workshop/](https://yukisakura1013.github.io/my-copilot-workshop/)
 
 ## 功能
 
@@ -22,7 +22,7 @@ GitHub Pages：`https://<你的帳號>.github.io/<你的repo名稱>/`
 
 - 使用 HTML、CSS 與原生 JavaScript；不使用框架、套件或外部 CDN。
 - CSS 以 `:root` 自訂屬性管理配色，並使用 `prefers-color-scheme` 偵測系統主題偏好。
-- 待辦資料目前只存在頁面記憶體中，重新載入後會重設；目前未使用 `localStorage`。
+- 待辦資料保存於瀏覽器 `localStorage`，重新載入後仍會保留。
 - 可作為靜態網頁在瀏覽器中執行。
 
 ## 開發方式

@@ -8,10 +8,33 @@ const themeIcon = document.getElementById('theme-icon');
 const themeLabel = document.getElementById('theme-label');
 const filterButtons = document.querySelectorAll('.filter-button');
 
-let todos = [];
+const STORAGE_KEY = 'my-todos';
+
+let todos = loadTodos();
 let currentFilter = 'all';
 let selectedTheme = null;
 const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+// 從 localStorage 載入待辦事項,資料無法讀取時以空清單開始。
+function loadTodos() {
+  try {
+    const savedTodos = localStorage.getItem(STORAGE_KEY);
+    const parsedTodos = savedTodos ? JSON.parse(savedTodos) : [];
+    return Array.isArray(parsedTodos) ? parsedTodos : [];
+  } catch (error) {
+    console.warn('讀取待辦清單失敗,將以空清單開始。', error);
+    return [];
+  }
+}
+
+// 將目前待辦事項保存至 localStorage。
+function saveTodos() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  } catch (error) {
+    console.warn('保存待辦清單失敗。', error);
+  }
+}
 
 // 取得目前手動選擇的主題,否則使用作業系統偏好。
 function getActiveTheme() {
@@ -82,6 +105,7 @@ function addTodo(text) {
     text,
     completed: false,
   });
+  saveTodos();
   render();
 }
 
@@ -90,12 +114,14 @@ function toggleTodo(id) {
   todos = todos.map((todo) =>
     todo.id === id ? { ...todo, completed: !todo.completed } : todo
   );
+  saveTodos();
   render();
 }
 
 // 刪除待辦事項並更新畫面。
 function deleteTodo(id) {
   todos = todos.filter((todo) => todo.id !== id);
+  saveTodos();
   render();
 }
 
